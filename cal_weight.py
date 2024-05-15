@@ -10,7 +10,7 @@ def calc_weight(height, weight):
     if result <= min_index:
         return input_bgu(weight)
     else:
-        return input_bgu(calc_percent(weight, 20))
+        return input_bgu(calc_percent(weight, 85))
 
 
 def toFixed(numObj, digits=0):
