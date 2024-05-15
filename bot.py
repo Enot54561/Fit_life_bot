@@ -46,8 +46,8 @@ def callback_inline(call):
     if call.message:
         if call.data == 'download':
             if check_member(call) == 1:
-                with open('file/123.txt', 'rb') as doc:
-                    bot.send_document(call.message.chat.id, document=open('file/123.txt', 'rb'))
+                with open('file/guide.pdf', 'rb') as doc:
+                    bot.send_document(call.message.chat.id, document=open('file/guide.pdf', 'rb'))
             elif check_member(call) == 2:
                 bot.send_message(call.message.chat.id,
                                  "Вы не подписаны на канал @fit_life_world.\n\n"
