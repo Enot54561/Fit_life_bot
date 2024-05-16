@@ -1,3 +1,5 @@
+import sys
+
 import telebot
 from telebot import types
 
@@ -7,7 +9,6 @@ import config
 API_TOKEN = config.API_TOKEN
 channel_id = config.channel_id
 bot = telebot.TeleBot(API_TOKEN)
-begin_text = config.beginning_text
 height = 0
 weight = 0
 
@@ -15,7 +16,7 @@ weight = 0
 # Handle '/start' and '/help'
 @bot.message_handler(commands=['start'])
 def start(message):
-    text_message = f'<b><i>Привет,{message.from_user.first_name}!</i></b> \n\n' + begin_text
+    text_message = f'<b><i>Привет,{message.from_user.first_name}!</i></b> \n\n' + config.beginning_text
     markup_inline = types.InlineKeyboardMarkup()
     item_dowload = types.InlineKeyboardButton(text="Скачть гайд", callback_data='download')
     item_calc = types.InlineKeyboardButton(text="Расчитать БЖУ", callback_data='calc')
@@ -26,8 +27,11 @@ def start(message):
 
 @bot.message_handler(commands=['help'])
 def send_help(message):
-    bot.send_message(message.chat.id, "Для возврата в стартовое меню бота нажмите /start")
+    bot.send_message(message.chat.id, config.help_mes)
 
+@bot.message_handler(content_types=['text'])
+def send_text(message):
+    bot.send_message(message.chat.id, config.error_mes)
 
 def check_member(call):
     user_id = call.from_user.id
@@ -49,13 +53,11 @@ def callback_inline(call):
                 with open('file/guide.pdf', 'rb') as doc:
                     bot.send_document(call.message.chat.id, document=open('file/guide.pdf', 'rb'))
             elif check_member(call) == 2:
-                bot.send_message(call.message.chat.id,
-                                 "Вы не подписаны на канал @fit_life_world.\n\n"
-                                 "Пожалуйста, подпишитесь, чтобы продолжить.")
+                bot.send_message(call.message.chat.id, config.alert_mes)
             elif check_member(call) == 3:
-                bot.send_message(call.message.chat.id, "При проверке ыозникла ошибка. Попробуйте позже")
+                bot.send_message(call.message.chat.id, config.check_error_mes)
         if call.data == 'calc':
-            msg1 = bot.send_message(call.message.chat.id, "Введите ваш рост в см.")
+            msg1 = bot.send_message(call.message.chat.id, config.input_height)
             bot.register_next_step_handler(msg1, msg2)
     bot.answer_callback_query(callback_query_id=call.id, show_alert=False)
 
@@ -64,26 +66,31 @@ def msg2(message):
     try:
         var1 = int(message.text)
     except ValueError:
-        bot.send_message(message.chat.id, "Вы ввели не число. Начните с начала\n"
-                                          "Нажмите /start")
+        bot.send_message(message.chat.id, config.error_mes_int)
     if type(var1) == int:
         global height
         height = var1
-        msg3 = bot.send_message(message.chat.id, "Введите ваш вес")
-        bot.register_next_step_handler(msg3, msg4)
+        if 120 < height < 230:
+            msg3 = bot.send_message(message.chat.id, config.input_weight)
+            bot.register_next_step_handler(msg3, msg4)
+        else:
+            bot.send_message(message.chat.id, config.error_input_height)
 
 
 def msg4(message):
     try:
         var1 = int(message.text)
     except ValueError:
-        bot.send_message(message.chat.id, "Вы ввели не число. Начните с начала\n"
-                                          "Нажмите /start")
+        bot.send_message(message.chat.id, config.error_mes_int)
     if type(var1) == int:
         global weight
         weight = var1
-        res = str(cal_weight.calc_weight(height, weight))
-        bot.send_message(message.chat.id, res)
+        if 30 < weight < 230:
+            res = str(cal_weight.calc_weight(height, weight))
+            bot.send_message(message.chat.id, res, parse_mode='HTML')
+        else:
+            bot.send_message(message.chat.id, config.error_input_weight)
+
 
 
 if __name__ == '__main__':

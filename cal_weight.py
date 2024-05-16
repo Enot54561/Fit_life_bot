@@ -13,14 +13,13 @@ def calc_weight(height, weight):
         return input_bgu(calc_percent(weight, 85))
 
 
-def toFixed(numObj, digits=0):
-    return f"{numObj:.{digits}f}"
-
-
 def input_bgu(weight):
-    return str(f'Белки - {weight * protein}\n'
-               f'Жиры - {weight * fat}\n'
-               f'Углеводы - {weight * carbohydrates}')
+    return str(f'<b> Внимание! Расчет произведен по средним значениям! </b>\n'
+               f'Ваши индивидуальные особенности не учитываются!\n\n'
+               f'Белки - {round(weight * protein, 2)}\n'
+               f'Жиры - {round(weight * fat, 2)}\n'
+               f'Углеводы - {round(weight * carbohydrates, 2)} \n\n'
+               f'Начать сначала /start')
 
 
 def calc_percent(num, percent):
