@@ -57,8 +57,13 @@ def callback_inline(call):
             elif check_member(call) == 3:
                 bot.send_message(call.message.chat.id, config.check_error_mes)
         if call.data == 'calc':
-            msg1 = bot.send_message(call.message.chat.id, config.input_height)
-            bot.register_next_step_handler(msg1, msg2)
+            if check_member(call) == 1:
+                msg1 = bot.send_message(call.message.chat.id, config.input_height)
+                bot.register_next_step_handler(msg1, msg2)
+            elif check_member(call) == 2:
+                bot.send_message(call.message.chat.id, config.alert_mes)
+            elif check_member(call) == 3:
+                bot.send_message(call.message.chat.id, config.check_error_mes)
     bot.answer_callback_query(callback_query_id=call.id, show_alert=False)
 
 
